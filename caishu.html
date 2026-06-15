@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>猜数游戏</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    font-family: system-ui, sans-serif; color: #333;
+  }
+  .card {
+    background: #fff; border-radius: 16px; padding: 40px; width: 380px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.2); text-align: center;
+  }
+  h1 { font-size: 1.6rem; margin-bottom: 8px; }
+  p.hint { color: #666; margin-bottom: 24px; font-size: .95rem; }
+  .input-row { display: flex; gap: 8px; margin-bottom: 16px; }
+  input {
+    flex: 1; padding: 12px 16px; border: 2px solid #ddd; border-radius: 10px;
+    font-size: 1.1rem; outline: none; transition: border .2s;
+  }
+  input:focus { border-color: #667eea; }
+  button {
+    padding: 12px 24px; border: none; border-radius: 10px; font-size: 1rem;
+    cursor: pointer; background: #667eea; color: #fff; font-weight: 600;
+    transition: background .2s;
+  }
+  button:hover { background: #5a6fd6; }
+  .msg {
+    min-height: 48px; padding: 12px; border-radius: 10px; font-size: 1rem;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 16px;
+  }
+  .msg.higher { background: #fff3e0; color: #e65100; }
+  .msg.lower  { background: #e3f2fd; color: #1565c0; }
+  .msg.win    { background: #e8f5e9; color: #2e7d32; font-weight: 700; font-size: 1.2rem; }
+  .msg.info   { background: #f5f5f5; color: #666; }
+  .stats { display: flex; justify-content: space-between; font-size: .9rem; color: #888; }
+  .btn-reset {
+    margin-top: 16px; background: #eee; color: #555; width: 100%;
+  }
+  .btn-reset:hover { background: #ddd; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>🎯 猜数游戏</h1>
+  <p class="hint">我想了一个 1~100 的数字，猜猜看！</p>
+
+  <div class="input-row">
+    <input id="guess" type="number" min="1" max="100" placeholder="输入数字" autofocus>
+    <button id="btn" onclick="doGuess()">猜！</button>
+  </div>
+
+  <div id="msg" class="msg info">输入一个数字开始吧 👆</div>
+
+  <div class="stats">
+    <span>已猜 <strong id="count">0</strong> 次</span>
+    <span>范围 <strong id="range">1 ~ 100</strong></span>
+  </div>
+
+  <button class="btn-reset" onclick="reset()">🔄 再来一局</button>
+</div>
+
+<script>
+let answer, attempts, lo, hi, done;
+
+function reset() {
+  answer = Math.floor(Math.random() * 100) + 1;
+  attempts = 0; lo = 1; hi = 100; done = false;
+  document.getElementById('guess').value = '';
+  document.getElementById('guess').disabled = false;
+  document.getElementById('btn').disabled = false;
+  document.getElementById('count').textContent = '0';
+  document.getElementById('range').textContent = '1 ~ 100';
+  setMsg('info', '输入一个数字开始吧 👆');
+  document.getElementById('guess').focus();
+}
+
+function setMsg(cls, text) {
+  const el = document.getElementById('msg');
+  el.className = 'msg ' + cls;
+  el.textContent = text;
+}
+
+function doGuess() {
+  if (done) return;
+  const input = document.getElementById('guess');
+  const n = parseInt(input.value, 10);
+  if (isNaN(n) || n < 1 || n > 100) {
+    setMsg('info', '请输入 1~100 之间的整数！');
+    input.value = ''; input.focus();
+    return;
+  }
+  attempts++;
+  document.getElementById('count').textContent = attempts;
+
+  if (n === answer) {
+    done = true;
+    setMsg('win', `🎉 答对了！数字就是 ${answer}，你用了 ${attempts} 次！`);
+    input.disabled = true;
+    document.getElementById('btn').disabled = true;
+  } else if (n < answer) {
+    lo = Math.max(lo, n + 1);
+    setMsg('higher', `📈 ${n} 太小了！往大猜~`);
+  } else {
+    hi = Math.min(hi, n - 1);
+    setMsg('lower', `📉 ${n} 太大了！往小猜~`);
+  }
+
+  document.getElementById('range').textContent = `${lo} ~ ${hi}`;
+  input.value = '';
+  input.focus();
+}
+
+document.getElementById('guess').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doGuess();
+});
+
+reset();
+</script>
+</body>
+</html>
