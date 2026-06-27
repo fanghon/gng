@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI 计算器 - 体重指数计算</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .unit-selector {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .unit-option {
+            flex: 1;
+        }
+
+        .unit-option input {
+            width: 60%;
+        }
+
+        .unit-option label {
+            text-align: right;
+            font-weight: normal;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .bmi-value {
+            font-size: 48px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .bmi-category {
+            font-size: 20px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .category-normal {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .category_underweight {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .category_overweight {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .category_obese {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .tips {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .tips h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .bmi-value {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏋️ BMI 计算器</h1>
+        <p class="subtitle">体重指数 (Body Mass Index) - 健康体重评估工具</p>
+
+        <div class="input-group">
+            <label for="height">身高 (Height)</label>
+            <div class="unit-selector">
+                <div class="unit-option">
+                    <input type="number" id="height-cm" placeholder="输入厘米数" min="100" max="250">
+                    <label for="height-cm">cm</label>
+                </div>
+                <div class="unit-option">
+                    <input type="number" id="height-ft" placeholder="输入英尺数" min="1" max="8">
+                    <label for="height-ft">ft</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="weight">体重 (Weight)</label>
+            <div class="unit-selector">
+                <div class="unit-option">
+                    <input type="number" id="weight-kg" placeholder="输入公斤数" min="20" max="500">
+                    <label for="weight-kg">kg</label>
+                </div>
+                <div class="unit-option">
+                    <input type="number" id="weight-lb" placeholder="输入磅数" min="44" max="1100">
+                    <label for="weight-lb">lb</label>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="calculateBMI()">计算 BMI</button>
+
+        <div class="result" id="result" style="display: none;">
+            <div class="bmi-value" id="bmiValue">0.0</div>
+            <div class="bmi-category" id="bmiCategory">正常体重</div>
+
+            <div class="tips" id="healthTips"></div>
+        </div>
+    </div>
+
+    <script>
+        // BMI 分类标准 (WHO)
+        const BMICategories = {
+            underweight: { min: 0, max: 18.49, label: '体重过轻', color: '#cce5ff' },
+            normal: { min: 18.5, max: 24.9, label: '正常体重', color: '#d4edda' },
+            overweight: { min: 25, max: 29.9, label: '超重', color: '#fff3cd' },
+            obese: { min: 30, max: Infinity, label: '肥胖', color: '#f8d7da' }
+        };
+
+        function calculateBMI() {
+            // 获取输入值
+            const heightCm = parseFloat(document.getElementById('height-cm').value);
+            const weightKg = parseFloat(document.getElementById('weight-kg').value);
+            const heightFt = parseFloat(document.getElementById('height-ft').value);
+            const weightLb = parseFloat(document.getElementById('weight-lb').value);
+
+            // 验证输入
+            if (!validateInput(heightCm, '身高 (cm)')) return;
+            if (!validateInput(weightKg, '体重 (kg)')) return;
+
+            // 使用厘米和公斤计算
+            const heightM = heightCm / 100;
+            const bmi = weightKg / (heightM * heightM);
+
+            // 显示结果
+            displayResult(bmi);
+        }
+
+        function calculateBMIImperial() {
+            // 英制单位计算
+            const heightFt = parseFloat(document.getElementById('height-ft').value);
+            const weightLb = parseFloat(document.getElementById('weight-lb').value);
+
+            if (!validateInput(heightFt, '身高 (ft)')) return;
+            if (!validateInput(weightLb, '体重 (lb)')) return;
+
+            // 英制 BMI 计算：703 × kg / m² = lb / ft²
+            const heightIn = heightFt * 12;
+            const bmi = (weightLb / Math.pow(heightIn, 2)) * 703;
+
+            displayResult(bmi);
+        }
+
+        function validateInput(value, fieldName) {
+            if (isNaN(value) || value <= 0) {
+                alert(`${fieldName} 必须输入一个正数`);
+                return false;
+            }
+            return true;
+        }
+
+        function displayResult(bmi) {
+            const resultDiv = document.getElementById('result');
+            const bmiValue = document.getElementById('bmiValue');
+            const bmiCategory = document.getElementById('bmiCategory');
+            const healthTips = document.getElementById('healthTips');
+
+            // 确定 BMI 类别
+            let category = 'normal';
+            for (const [cat, data] of Object.entries(BMICategories)) {
+                if (bmi >= data.min && bmi <= data.max) {
+                    category = cat;
+                    break;
+                }
+            }
+
+            // 更新显示
+            bmiValue.textContent = bmi.toFixed(1);
+            bmiCategory.textContent = BMICategories[category].label;
+            bmiCategory.style.backgroundColor = BMICategories[category].color;
+            bmiCategory.style.color = getContrastColor(BMICategories[category].color);
+
+            // 健康建议
+            let tips = '';
+            switch (category) {
+                case 'underweight':
+                    tips = `💡 <strong>体重过轻：</strong><br>` +
+                          `• 增加营养丰富的食物，如坚果、全谷物<br>` +
+                          `• 适当增加蛋白质摄入（鸡蛋、鱼类、瘦肉）<br>` +
+                          `• 考虑进行力量训练以增加肌肉量`;
+                    break;
+
+                case 'normal':
+                    tips = `✅ <strong>体重正常：</strong><br>` +
+                          `• 继续保持健康的生活方式<br>` +
+                          `• 均衡饮食，适量运动<br>` +
+                          `• 定期监测体重变化`;
+                    break;
+
+                case 'overweight':
+                    tips = `⚠️ <strong>超重：</strong><br>` +
+                          `• 控制总热量摄入，减少高糖、高脂食物<br>` +
+                          `• 增加有氧运动（跑步、游泳、骑车）<br>` +
+                          `• 尝试 DASH 饮食法或地中海饮食`;
+                    break;
+
+                case 'obese':
+                    tips = `🚨 <strong>肥胖：</strong><br>` +
+                          `• 寻求专业营养师指导<br>` +
+                          `• 制定个性化的减重计划<br>` +
+                          `• 结合有氧和力量训练<br>` +
+                          `• 保持耐心，循序渐进`;
+                    break;
+            }
+
+            healthTips.innerHTML = tips;
+            resultDiv.style.display = 'block';
+        }
+
+        function getContrastColor(color) {
+            // 简单判断：浅色背景用深色文字，深色背景用浅色文字
+            return color.startsWith('#d4edda') || color.startsWith('#fff3cd') ? '#155724' : '#721c24';
+        }
+
+        // 自动计算（当输入框有值时）
+        document.getElementById('height-cm').addEventListener('input', function() {
+            if (this.value && document.getElementById('weight-kg').value) {
+                calculateBMI();
+            }
+        });
+
+        document.getElementById('weight-kg').addEventListener('input', function() {
+            if (this.value && document.getElementById('height-cm').value) {
+                calculateBMI();
+            }
+        });
+    </script>
+</body>
+</html>
