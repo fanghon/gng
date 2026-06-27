@@ -6,7 +6,7 @@ WORKDIR /app
 
 # 复制 package.json 并安装依赖
 COPY package.json ./
-RUN npm ci --only=production
+RUN npm install --omit=dev
 
 # 复制应用代码
 COPY server.js ./
